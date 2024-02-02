@@ -1,4 +1,14 @@
-# Backend-Test
+# AI Backend Infrastructure Demo
+
+This project is a scalable backend system for image classification. It is designed to handle a high volume of requests and is built using Docker, Node.js, Python, and Nginx.
+
+The system is composed of two main services: classifier-interface and classifier. The classifier-interface service is responsible for handling incoming requests, performing authentication, validation, and sanitation. It then forwards image inference requests to the classifier service. The classifier service is responsible for the actual image classification.
+
+The system is designed to be scalable. It uses Nginx as a reverse proxy and Docker's hostname resolution to implement two load balancers. This allows the system to distribute incoming requests across multiple instances of the classifier-interface and classifier services. The number of instances can be easily adjusted in the docker-compose.yml file to meet the demand.
+
+The system also includes security features such as rate limiting, JWT authentication, and input sanitation. It is also designed to be resistant to CSRF attacks.
+
+For more detailed information about the system architecture, load tests, and security features, please refer to the relevant sections in the README file.
 
 ## How to run
 
