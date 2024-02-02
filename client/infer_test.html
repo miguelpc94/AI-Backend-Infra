@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Image Upload for Inference</h2>
+
+<div>
+  User ID: <span id="userIdDisplay"></span><br>
+</div>
+
+<form id="uploadForm" enctype="multipart/form-data">
+  Select image to upload:
+  <input type="file" name="image_file" id="image_file">
+  <input type="button" value="Upload Image" id="submitBtn">
+</form>
+
+<script>
+  let jwtToken = '';
+  let userId = '';
+
+  // Fetch JWT token as soon as the page loads
+  window.onload = function() {
+    fetch('http://localhost:4000/api/token/generate')
+      .then(response => response.json())
+      .then(data => {
+        jwtToken = data.token;
+        userId = data.userId;
+        document.getElementById('userIdDisplay').textContent = userId;
+      })
+      .catch(error => {
+        console.error('Error fetching token:', error);
+        alert('Error fetching token');
+      });
+  };
+
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    var form = document.getElementById('uploadForm');
+    var formData = new FormData(form);
+
+    fetch('http://localhost:4000/api/classifier/infer', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`
+      },
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      alert('Inference result: ' + JSON.stringify(data));
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred');
+    });
+  });
+</script>
+
+</body>
+</html>

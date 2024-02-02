@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+
+  classifier:
+    build: ./classifier
+    deploy:
+      replicas: 2  # Number of classifier instances
+      restart_policy:
+        condition: on-failure
+    networks:
+      - internal-network
+  
+  internal-load-balancer:
+    image: nginx:latest
+    volumes:
+      - ./internal-load-balancer/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - classifier
+    networks:
+      - internal-network
+
+
+  classifier-interface:
+    build: ./classifier-interface
+    deploy:
+      replicas: 2  # Number of classifier-interface instances
+    environment:
+      - JWT_SECRET=dev-jwt-token
+    networks:
+      - internal-network
+  
+  external-load-balancer:
+    image: nginx:latest
+    volumes:
+      - ./external-load-balancer/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "4000:2000"
+    depends_on:
+      - classifier-interface
+    networks:
+      - internal-network
+
+
+networks:
+  internal-network:
+    driver: bridge
